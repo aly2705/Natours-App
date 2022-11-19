@@ -18,4 +18,9 @@ Natours App is driven by a RESTful API - acronym for REpresentational State Tran
 
 ### MVC meets mongoose
 
-Mongoose and Express have the right features to use the MVC architecture to structure the code
+Mongoose and Express have the right features to facilitate the use of the MVC architecture for structuring the code. Code is split in:
+
+- app.js (that keeps the code for the express app) and server.js (entry point that makes the api run - connects to db and starts the server)
+- routes directory: keeps the routes and the routing for the available resources/methods in the api
+- controllers directory: every api action for a certain resource has its own handler kept in a controller => this is where CRUD operations are performed
+- models directory: every resource in a database has a schema and a model based on the schema

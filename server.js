@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const app = require('./app');
 
 dotenv.config({ path: './config.env' }); //using 3rd party module to include our env variables
 //console.log(process.env); // view node env variables
@@ -21,8 +22,6 @@ mongoose
     // this connect method promise response gets access to a connectionObj
     console.log('Connected to database successfully');
   });
-
-const app = require('./app');
 
 const port = process.env.PORT;
 app.listen(port, () => {
