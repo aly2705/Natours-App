@@ -7,6 +7,9 @@
     "start": "nodemon server.js",
     "production": "SET NODE_ENV=production&&nodemon server.js"
   },
+  "engines": {
+    "node": ">=8.3.0"
+  },
   "author": "Alexandra Simion",
   "license": "ISC",
   "dependencies": {
