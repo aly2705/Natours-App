@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon server.js",
-    "production": "SET NODE_ENV=production&&nodemon server.js"
+    "production": "SET NODE_ENV=production&&nodemon server.js",
+    "debug": "ndb server.js"
   },
   "engines": {
     "node": ">=8.3.0"
