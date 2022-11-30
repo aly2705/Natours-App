@@ -20,7 +20,8 @@ app.use(express.static(`${__dirname}/public`));
 
 // Creating our own middleware
 app.use((req, res, next) => {
-  //console.log('Hello from the middleware');
+  // express middleware
+  // console.log(req.headers);
   next();
 });
 
