@@ -11,6 +11,23 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
+const createSendToken = (user, statusCode, res, sendUserBack = false) => {
+  const token = signToken(user._id);
+
+  if (sendUserBack) {
+    res.status(statusCode).json({
+      status: 'success',
+      token,
+      data: { user },
+    });
+  } else {
+    res.status(statusCode).json({
+      status: 'success',
+      token,
+    });
+  }
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -20,14 +37,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
   });
-
-  const token = signToken(newUser._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-    data: { user: newUser },
-  });
+  createSendToken(newUser, 201, res, true);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -51,11 +61,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 3) If everything ok, send token to client
-  const token = signToken(user.id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -174,12 +180,36 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 3) Update changedPasswordAt property for the user
+  // -> pre save middleware in userModel
 
   // 4) Log user in, send JWT
-  const token = signToken(user._id);
+  createSendToken(user, 200, res);
+});
 
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1) Get user from collection
+  const user = await User.findOne({ email: req.user.email }).select(
+    '+password'
+  ); // route is protected, we have user on req.user
+
+  // 2) Check if posted password is correct
+  const { oldPassword } = req.body;
+  const passwordIsCorrect = await user.correctPassword(
+    oldPassword,
+    user.password
+  );
+
+  if (!passwordIsCorrect) {
+    return next(
+      new AppError('Incorrect password! You can not perform this action', 403)
+    );
+  }
+
+  // 3) Update password
+  user.password = req.body.newPassword;
+  user.passwordConfirm = req.body.newPasswordConfirm;
+  await user.save();
+
+  // 4) Login the user, new JWT
+  createSendToken(user, 200, res);
 });

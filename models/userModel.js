@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // PASSWORD ENCRYPTION
@@ -62,6 +67,12 @@ userSchema.pre('save', function (next) {
   next();
 });
 
+userSchema.pre(/^find/, function (next) {
+  // this points to current query
+  this.find({ active: { $ne: false } });
+  next();
+});
+
 // INSTANCE METHODS
 userSchema.methods.correctPassword = async function (
   candidatePassword,
@@ -69,6 +80,7 @@ userSchema.methods.correctPassword = async function (
 ) {
   //this - points to current document
   //password not selected => this.password is not available
+
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
