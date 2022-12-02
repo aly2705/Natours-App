@@ -14,18 +14,29 @@ const signToken = (id) =>
 const createSendToken = (user, statusCode, res, sendUserBack = false) => {
   const token = signToken(user._id);
 
+  //Send token via cookie
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 3600 * 1000
+    ),
+    httpOnly: true,
+  };
+  //In production add secure: true, to allow only https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  const responseObj = {
+    status: 'success',
+    token,
+  };
   if (sendUserBack) {
-    res.status(statusCode).json({
-      status: 'success',
-      token,
-      data: { user },
-    });
-  } else {
-    res.status(statusCode).json({
-      status: 'success',
-      token,
-    });
+    // Remove password from output
+    user.password = undefined;
+    responseObj.data = { user };
   }
+
+  res.status(statusCode).json(responseObj);
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
