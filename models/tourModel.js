@@ -35,6 +35,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
+      set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: { type: Number, default: 0 },
     price: { type: Number, required: [true, 'A tour must have a price'] },
@@ -99,10 +100,23 @@ const tourSchema = new mongoose.Schema(
 );
 // For built-in validators, check: https://mongoosejs.com/docs/validation.html
 
+// Improve read performance with indexes
+// tourSchema.index({ price: 1 }); //single field index
+tourSchema.index({ price: 1, ratingsAverage: -1 }); // compound index
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
+
 // MONGOOSE FEATURES
 // 1) Virtual Properties = cannot be used in queries
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+// Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
 });
 
 // 2) Document Middleware
@@ -148,11 +162,11 @@ tourSchema.post(/^find/, function (documents, next) {
 });
 
 // 4) Aggregation middleware
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  // console.log(this.pipeline());
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   // console.log(this.pipeline());
+//   next();
+// });
 
 // Create a model based on a schema
 const Tour = mongoose.model('Tour', tourSchema);
