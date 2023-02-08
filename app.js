@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -8,13 +9,20 @@ const hpp = require('hpp');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const AppError = require('./utilities/AppError');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 ///////////////////////////////////////////////////////
 // 1) MIDDLEWARES
+
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Set Security HTTP headers
 app.use(helmet());
@@ -53,9 +61,6 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // Test middleware: Creating our own middleware
 app.use((req, res, next) => {
   // express middleware
@@ -69,6 +74,7 @@ app.use((req, res, next) => {
 //////////////////////////////////////////////////////////
 // 3) ROUTES
 // Mounting routers
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
