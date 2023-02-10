@@ -83,6 +83,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ').at(1);
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(
@@ -223,4 +225,29 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // 4) Login the user, new JWT
   createSendToken(user, 200, res);
+});
+
+// Only for rendered pages, no errors!
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (!req.cookies.jwt) return next();
+
+  const token = req.cookies.jwt;
+
+  // 1) Verify token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // 2) Check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next();
+  }
+
+  // 3) Check if user changed password after token was issued
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next();
+  }
+
+  // THERE IS A LOGGED IN USER
+  res.locals.user = currentUser; // under the res.locals we can specify properties that become variabiles in our templates
+  next();
 });
