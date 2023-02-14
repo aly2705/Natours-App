@@ -9,6 +9,7 @@ const router = express.Router();
 //Authentication routes
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
+
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 router.patch(
@@ -16,6 +17,8 @@ router.patch(
   authController.protect,
   authController.updatePassword
 );
+
+router.get('/logout', authController.logout);
 
 //Will protect all of the routes from now on
 router.use(authController.protect);

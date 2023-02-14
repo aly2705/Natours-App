@@ -1,11 +1,15 @@
 /* eslint-disable */
 import '@babel/polyfill';
-import { login } from './login.js';
+import { login, logout } from './login.js';
 import { displayMap } from './map.js';
+import { updateSettings } from './updateSettings.js';
 
 // DOM ELEMENTS
-const form = document.querySelector('.form');
+const loginForm = document.querySelector('.form--login');
 const map = document.querySelector('#map');
+const logoutBtn = document.querySelector('.nav__el--logout');
+const accSettingsForm = document.querySelector('.form-user-data');
+const updatePasswordFrom = document.querySelector('.form-password');
 
 // DELEGATION
 if (map) {
@@ -14,11 +18,44 @@ if (map) {
   displayMap(locations);
 }
 
-if (form) {
-  form.addEventListener('submit', (e) => {
+if (loginForm) {
+  loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     login(email, password);
+  });
+}
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', logout);
+}
+
+if (accSettingsForm) {
+  accSettingsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    updateSettings({ name, email }, 'data');
+  });
+}
+
+if (updatePasswordFrom) {
+  updatePasswordFrom.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    document.querySelector('.btn--save-password').textContent = 'Updating...';
+    const oldPassword = document.getElementById('password-current').value;
+    const newPassword = document.getElementById('password').value;
+    const newPasswordConfirm =
+      document.getElementById('password-confirm').value;
+    await updateSettings(
+      { oldPassword, newPassword, newPasswordConfirm },
+      'password'
+    );
+
+    document.getElementById('password-current').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('password-confirm').value = '';
+    document.querySelector('.btn--save-password').textContent = 'Save Password';
   });
 }
