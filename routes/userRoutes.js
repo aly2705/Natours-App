@@ -28,7 +28,12 @@ router.get(
   userController.getMe,
   userController.getUser
 );
-router.patch('/updateMe', userController.updateMe);
+router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
+  userController.updateMe
+);
 router.delete('/deleteMe', userController.deleteMe);
 
 //Will restrict all of the routes from now on
