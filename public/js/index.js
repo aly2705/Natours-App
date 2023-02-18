@@ -3,6 +3,7 @@ import '@babel/polyfill';
 import { login, logout } from './login.js';
 import { displayMap } from './map.js';
 import { updateSettings } from './updateSettings.js';
+import { bookTour } from './stripe.js';
 
 // DOM ELEMENTS
 const loginForm = document.querySelector('.form--login');
@@ -10,6 +11,7 @@ const map = document.querySelector('#map');
 const logoutBtn = document.querySelector('.nav__el--logout');
 const accSettingsForm = document.querySelector('.form-user-data');
 const updatePasswordFrom = document.querySelector('.form-password');
+const bookBtn = document.querySelector('#book-tour');
 
 // DELEGATION
 if (map) {
@@ -62,3 +64,11 @@ if (updatePasswordFrom) {
     document.querySelector('.btn--save-password').textContent = 'Save Password';
   });
 }
+
+if (bookBtn)
+  bookBtn.addEventListener('click', async (e) => {
+    const btn = e.target.closest('#book-tour');
+    btn.textContent = 'Processing...';
+    const { tourId } = btn.dataset;
+    await bookTour(tourId);
+  });
