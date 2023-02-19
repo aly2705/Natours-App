@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cors = require('cors');
 const compression = require('compression');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -23,6 +24,12 @@ app.set('views', path.join(__dirname, 'views'));
 
 ///////////////////////////////////////////////////////
 // 1) MIDDLEWARES
+
+// ENABLE CORS
+app.use(cors()); // Set Access-Control-Allow-Origin to '*'
+//app.use(cors({ origin: 'https://wherefrontendislocated.dev' })); // specific url
+app.options('*', cors());
+// app.options('/api/some-route', cors());
 
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));

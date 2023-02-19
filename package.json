@@ -14,7 +14,7 @@
     "build:js": "parcel build ./public/js/index.js --out-dir ./public/js/bundled"
   },
   "engines": {
-    "node": ">=8.3.0"
+    "node": "^16"
   },
   "author": "Alexandra Simion",
   "license": "ISC",
@@ -24,6 +24,7 @@
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "core-js": "^2.6.12",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-mongo-sanitize": "^2.2.0",
