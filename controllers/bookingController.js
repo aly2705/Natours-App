@@ -47,3 +47,10 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
 
   res.redirect(req.originalUrl.split('?').at(0));
 });
+
+exports.getBookings = handlerFactory.getAll(Booking);
+exports.createBooking = handlerFactory.createOne(Booking);
+
+exports.getBooking = handlerFactory.getOne(Booking);
+exports.updateBooking = handlerFactory.updateOne(Booking);
+exports.deleteBooking = handlerFactory.deleteOne(Booking);
