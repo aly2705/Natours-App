@@ -100,7 +100,6 @@ exports.getToursStats = catchAsync(async (req, res, next) => {
     //   $match: { _id: { $ne: 'EASY' } },
     // },
   ]);
-  console.log(stats);
 
   res.status(200).json({
     status: 'success',
@@ -159,7 +158,6 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
       )
     );
   }
-  console.log(distance, lat, lng, unit);
 
   // Geospatial queries
   const tours = await Tour.find({
